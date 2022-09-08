@@ -13,8 +13,8 @@ dispatcher = updater.dispatcher
 current_user = {}
 CLASS_DATA = {}
 CLASS_PART = {}
-CLASS_CODES = {"T15": "1402",
-               "T16": "1403"}
+CLASS_CODES = {"T15": "9210",
+               "T16": "9211"}
 ALL_CLASSES = ["T15", "T16"]
 
 for c in ALL_CLASSES:
@@ -70,17 +70,18 @@ def message_handler(update, context):
         CLASS_PART["participation_" + curr_class].sort()
         write_to_txt(curr_class, "P")
         context.bot.send_message(chat_id=update.effective_chat.id, text=msg + " registered!")
+        current_user[update.effective_chat.id]['state'] = "registered_participation"
     else:
         password = CLASS_CODES.get(curr_class)
-        if password is None:
-            context.bot.send_message(chat_id=update.effective_chat.id, text="Wrong code/format, include a space after the code if you forgot to.")
-        elif msg.startswith(password):
+        if msg.startswith(password):
             name = msg.split(password + " ")[1]
             CLASS_DATA[curr_class].append(name)
             CLASS_DATA[curr_class].sort()
             write_to_txt(curr_class, "T")
             context.bot.send_message(chat_id=update.effective_chat.id, text=name + " registered!")
             print("Total: " + str(len(CLASS_DATA[curr_class])))
+        else:
+            context.bot.send_message(chat_id=update.effective_chat.id, text="Wrong code/format, include a space after the code if you forgot to.")
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
